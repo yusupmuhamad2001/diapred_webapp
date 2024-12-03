@@ -1,0 +1,1 @@
+2024-12-03 16:27:45,418 - ERROR - Error saving history: "['Nama', 'Jenis Kelamin', 'Usia', 'Hipertensi', 'Penyakit Jantung', 'Riwayat Merokok', 'Level HbA1c', 'Glukosa Darah', 'Hasil'] not in index"
