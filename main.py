@@ -404,7 +404,7 @@ def main():
         if st.button("Visualisasi Riwayat"):
             show_history_analytics(history)
 
-        if st.button("Hapus Riwayat", disabled=False):
+        if st.button("Hapus Riwayat", disabled=True):
             delete_history()
 
     elif menu == "Tentang Aplikasi":
