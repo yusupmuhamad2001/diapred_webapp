@@ -168,6 +168,15 @@ def show_history_analytics(history):
         results_count = history['Hasil'].value_counts()
         total_predictions = len(history)
         
+        # Pastikan urutan kategori selalu konsisten
+        results_df = pd.DataFrame({
+            'Kategori': ['Diabetes', 'Non-Diabetes'],
+            'Jumlah': [
+                results_count.get('Diabetes', 0),
+                results_count.get('Non-Diabetes', 0)
+            ]
+        })
+        
         # Buat dua kolom untuk informasi dan pie chart
         col1, col2 = st.columns(2)
         
@@ -187,11 +196,23 @@ def show_history_analytics(history):
             unsafe_allow_html=True)
         
         with col2:
-            # Pie chart hasil prediksi
-            fig1 = px.pie(values=results_count.values, 
-                         names=results_count.index,
+            # Pie chart dengan urutan yang konsisten
+            fig1 = px.pie(results_df, 
+                         values='Jumlah',
+                         names='Kategori',
                          title="Distribusi Hasil Prediksi",
-                         color_discrete_sequence=['#FF6B6B', '#4CAF50'])
+                         color='Kategori',
+                         color_discrete_map={
+                             'Diabetes': '#FF6B6B',
+                             'Non-Diabetes': '#4CAF50'
+                         })
+            
+            fig1.update_traces(textposition='inside', 
+                             textinfo='percent+value+label',
+                             hovertemplate="<b>%{label}</b><br>" +
+                                         "Jumlah: %{value}<br>" +
+                                         "Persentase: %{percent}<br>")
+            
             fig1.update_layout(
                 title_x=0.5,
                 title_font_size=16,
