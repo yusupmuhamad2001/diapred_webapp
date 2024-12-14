@@ -101,14 +101,6 @@ def validate_name(name):
         return False, "Nama hanya boleh mengandung huruf!"
     return True, ""
 
-def delete_history():
-    history_file = HISTORY_FILE
-    if os.path.exists(history_file):
-        os.remove(history_file)
-        st.success("Riwayat berhasil dihapus.")
-    else:
-        st.info("Tidak ada riwayat untuk dihapus.")
-
 def validate_input(data):
     errors = []
     
@@ -126,32 +118,133 @@ def validate_input(data):
     
     return errors
 
-def get_recommendations(result, bmi, glucose, hba1c):
+def get_recommendations(result, bmi, glucose, hba1c, smoking_status, hypertension, heart_disease, age):
     recommendations = []
     
-    if result == 'Diabetes':
-        if glucose > 200:
-            recommendations.append("Kontrol gula darah secara teratur. Pertimbangkan untuk memeriksa kadar gula darah setiap hari dan konsultasikan dengan dokter untuk pengaturan dosis obat.")
-        if bmi > 25:
-            recommendations.append("Pertimbangkan program penurunan berat badan. Konsultasikan dengan ahli gizi untuk mendapatkan rencana diet yang sesuai.")
-        if hba1c > 6.5:
-            recommendations.append("Konsultasi dengan dokter untuk pengobatan. Mungkin perlu menyesuaikan pengobatan atau memulai terapi insulin.")
-        
+    # Rekomendasi berdasarkan status merokok
+    if smoking_status == 'Perokok Aktif':
         recommendations.extend([
-            "Lakukan olahraga teratur minimal 30 menit setiap hari",
-            "Batasi konsumsi karbohidrat dan gula",
-            "Konsumsi makanan tinggi serat",
-            "Pantau kadar gula darah secara rutin"
+            "***Status: Perokok Aktif 🚬***",
+            "- Sangat disarankan untuk berhenti merokok karena meningkatkan risiko komplikasi diabetes",   
+        ])
+
+    elif smoking_status == 'Mantan Perokok':
+        recommendations.extend([
+            "***Status: Mantan Perokok 🚬***",
+            "- Pertahankan untuk tidak merokok kembali dan hindari paparan asap rokok pasif"
+        ])
+    
+    elif smoking_status == 'Tidak Pernah':
+        recommendations.extend([
+            "***Status: Tidak Pernah Merokok ✨***",
+            "- Pertahankan gaya hidup bebas rokok Anda!",
+        ])
+    
+    # Rekomendasi untuk hipertensi
+    if hypertension:
+        recommendations.extend([
+            "Status: Memiliki Hipertensi ⚠️",
+            "- Batasi konsumsi garam (<2300mg/hari)",
+            "- Hindari makanan tinggi sodium",
+            "- Konsumsi makanan kaya potasium seperti pisang dan alpukat"
+        ])
+    
+    # Rekomendasi untuk penyakit jantung
+    if heart_disease:
+        recommendations.extend([
+            "***Status: Memiliki Penyakit Jantung ❤️***",
+            "- Rutin kontrol ke dokter jantung",
+            "- Batasi aktivitas fisik berat",
+            "- Konsumsi makanan rendah lemak jenuh",
+            "- Hindari stres berlebihan"
+        ])
+    
+    if result == 'Diabetes':
+        # Rekomendasi spesifik berdasarkan glukosa
+        if glucose > 200:
+            recommendations.extend([
+                f"***Glukosa {glucose} mg/dL (>200) 🔴***",
+                "- Kadar gula darah Anda sangat tinggi",
+                "- Kontrol gula darah secara teratur"
+                "- Periksa kadar gula darah setiap hari",
+                "- Segera Konsultasikan dengan dokter"
+            ])
+        elif glucose > 150:
+            recommendations.extend([
+                f"Glukosa {glucose} mg/dL (>150) 🟡",
+                "- Waspada! Kadar gula darah Anda mulai tinggi",
+                "- Mulai batasi makanan manis dan karbohidrat tinggi",
+                "- Tingkatkan aktivitas fisik minimal 30 menit per hari",
+                "- Lakukan pemeriksaan gula darah rutin",
+                "- Konsultasi dengan ahli gizi untuk penyesuaian pola makan"
+            ])
+        
+        # Rekomendasi spesifik berdasarkan BMI
+        if bmi > 30:
+            recommendations.extend([
+                f"***BMI {bmi:.1f} (Obesitas) ⚠️***",
+                "- Program penurunan berat badan intensif",
+                "- Segera konsultasi dengan ahli gizi"
+            ])
+        elif bmi > 25:
+            recommendations.extend([
+                f"***BMI {bmi:.1f} (Overweight) ⚠️***",
+                "- Program penurunan berat badan moderat",
+                "- Disarankan untuk konsultasi dengan ahli gizi"
+            ])
+        
+        # Rekomendasi spesifik berdasarkan HbA1c
+        if hba1c > 8:
+            recommendations.extend([
+                f"***HbA1c {hba1c}% (>8) 🔴***",
+                "- Kadar HbA1c sangat tinggi",
+                "- Segera konsultasikan dengan dokter",
+            ])
+        elif hba1c > 6.5:
+            recommendations.extend([
+                f"***HbA1c {hba1c}% (>6.5) 🟡***",
+                "- Kadar HbA1c di atas normal",
+                "- Disarankan untuk konsultasi dengan dokter"
+            ])
+        
+        # Rekomendasi umum untuk penderita diabetes
+        recommendations.extend([
+            "Rekomendasi Umum Diabetes:",
+            "- Olahraga minimal 30 menit/hari",
+            "- Batasi konsumsi karbohidrat dan gula",
+            "- Konsumsi makanan tinggi serat",
+            "- Pantau gula darah secara rutin"
         ])
     else:
+        # Rekomendasi untuk non-diabetes dengan faktor risiko
+        if bmi > 30:
+            recommendations.extend([
+                f"***BMI {bmi:.1f} (Obesitas) ⚠️***",
+                "- Risiko tinggi diabetes",
+                "- Program penurunan berat badan diperlukan",
+                "- Konsultasi dengan dokter atau ahli gizi"
+            ])
+        elif bmi > 25:
+            recommendations.extend([
+                f"***BMI {bmi:.1f} (Overweight) ⚠️***",
+                "- Risiko diabetes meningkat",
+                "- Pertimbangkan penurunan berat badan"
+            ])
+        
+        if glucose > 140:
+            recommendations.extend([
+                f"***Glukosa {glucose} mg/dL (>140) ⚠️***",
+                "- Waspadai pre-diabetes",
+                "- Periksa gula darah secara berkala"
+            ])
+        
         recommendations.extend([
-            "Pertahankan pola hidup sehat",
-            "Lakukan olahraga teratur",
-            "Jaga pola makan seimbang",
-            "Lakukan pemeriksaan gula darah rutin setiap tahun"
+            "***Rekomendasi Pencegahan Diabetes:***", 
+            "- Jaga Pola hidup sehat",
+            "- Olahraga minimal 150 menit per minggu",
+            "- Jaga Pola makan seimbang",
+            "- Monitoring gula darah secara rutin"
         ])
-        if bmi > 25:
-            recommendations.append("Pertimbangkan untuk menurunkan berat badan untuk mencegah risiko diabetes")
     
     return recommendations
 
@@ -191,7 +284,7 @@ def show_history_analytics(history):
             fig1 = px.pie(values=results_count.values, 
                          names=results_count.index,
                          title="Distribusi Hasil Prediksi",
-                         color_discrete_sequence=['#FF6B6B', '#4CAF50'])
+                         color_discrete_sequence=['#118B50', '#FF2929'])
             fig1.update_layout(
                 title_x=0.5,
                 title_font_size=16,
@@ -209,35 +302,42 @@ def show_history_analytics(history):
 
 def get_bmi_recommendations(bmi):
     recommendations = []
+    
     if bmi < 18.5:
         recommendations.extend([
-            "Tingkatkan asupan kalori dengan makanan bergizi",
-            "Konsumsi protein berkualitas tinggi",
-            "Lakukan latihan kekuatan secara teratur",
-            "Konsultasikan dengan ahli gizi untuk program penambahan berat badan yang sehat"
+            f"***BMI {bmi:.1f} (Anda Kekurangan Berat Badan) ⚠️***",
+            "- Tingkatkan asupan kalori dengan makanan bergizi",
+            "- Konsumsi protein berkualitas tinggi",
+            "- Lakukan olahraga secara teratur",
+            "- Konsultasikan dengan ahli gizi untuk program penambahan berat badan yang sehat"
         ])
     elif 18.5 <= bmi < 24.9:
         recommendations.extend([
-            "Pertahankan pola makan seimbang",
-            "Lakukan olahraga rutin minimal 30 menit per hari",
-            "Jaga kualitas tidur yang baik",
-            "Lanjutkan gaya hidup sehat yang sudah dijalani"
+            f"***BMI {bmi:.1f} (Berat Badan Anda Normal) ✅***",
+            "- Pertahankan pola makan seimbang",
+            "- Lakukan olahraga rutin minimal 150 menit per minggu",
+            "- Jaga kualitas tidur yang baik",
+            "- Lanjutkan gaya hidup sehat yang sudah dijalani"
         ])
     elif 25 <= bmi < 29.9:
         recommendations.extend([
-            "Kurangi porsi makan secara bertahap",
-            "Tingkatkan aktivitas fisik menjadi 45-60 menit per hari",
-            "Hindari makanan tinggi gula dan lemak jenuh",
-            "Pertimbangkan untuk berkonsultasi dengan ahli gizi"
+            f"***BMI {bmi:.1f} (Anda Kelebihan Berat Badan) ⚠️***",
+            "- Kurangi porsi makan secara bertahap",
+            "- Tingkatkan aktivitas fisik menjadi 45-60 menit per hari",
+            "- Hindari makanan tinggi gula dan lemak jenuh",
+            "- Pertimbangkan untuk berkonsultasi dengan ahli gizi",
         ])
-    else:
+    else:  # BMI >= 30
         recommendations.extend([
-            "Segera konsultasi dengan dokter atau ahli gizi",
-            "Mulai program penurunan berat badan yang aman",
-            "Lakukan olahraga ringan secara bertahap",
-            "Catat asupan makanan harian",
-            "Periksa kesehatan secara rutin"
+            f"***BMI {bmi:.1f} (Anda Obesitas) 🔴***",
+            "- Segera konsultasi dengan dokter atau ahli gizi",
+            "- Mulai program penurunan berat badan yang aman",
+            "- Olahraga secara teratur selama minimal 30 menit setiap hari",
+            "- Catat asupan makanan harian",
+            "- Periksa kesehatan secara rutin",
+            "- Hindari makanan dan minuman tinggi lemak"
         ])
+            
     return recommendations
 
 def show_about():
@@ -274,15 +374,6 @@ def show_about():
        - Analisis tren hasil prediksi
     """)
     
-   
-    st.write("### ⚕️ Rekomendasi Umum")
-    st.write("""
-    - Lakukan pemeriksaan kesehatan rutin
-    - Konsultasikan hasil prediksi dengan dokter
-    - Jaga pola makan seimbang
-    - Lakukan aktivitas fisik secara teratur
-    - Hindari gaya hidup tidak sehat
-    """)
 
 # Main function for Streamlit
 def main():
@@ -336,7 +427,16 @@ def main():
                         
                         # Tampilkan rekomendasi
                         st.write("### Rekomendasi Kesehatan:")
-                        recommendations = get_recommendations(result, bmi, blood_glucose_level, hba1c_level)
+                        recommendations = get_recommendations(
+                            result, 
+                            bmi, 
+                            blood_glucose_level, 
+                            hba1c_level,
+                            list(smoking_history_map.keys())[list(smoking_history_map.values()).index(smoking_history)],
+                            hypertension == 1,
+                            heart_disease == 1,
+                            age
+                        )
                         for rec in recommendations:
                             st.write(f"- {rec}")
 
@@ -384,14 +484,16 @@ def main():
         if history.empty:
             st.info("Belum ada riwayat prediksi.")
         else:
-            history.index = range(1, len(history) + 1)
-            
             # Terjemahkan nama kolom
             history.columns = ['Nama', 'Jenis Kelamin', 'Usia', 'Hipertensi', 'Penyakit Jantung', 
                              'Riwayat Merokok', 'BMI', 'Level HbA1c', 'Glukosa Darah', 'Hasil']
             
+            # Tampilkan data dengan nomor index
+            st.write("### Data Riwayat Prediksi")
+            history.index = range(1, len(history) + 1)
             st.dataframe(history)
             
+            # Tombol unduh riwayat
             csv = history.to_csv(index=False)
             st.download_button(
                 label="Unduh Riwayat (CSV)",
@@ -399,13 +501,9 @@ def main():
                 file_name='riwayat_prediksi_diabetes.csv',
                 mime='text/csv'
             )
-        
 
-        if st.button("Visualisasi Riwayat"):
-            show_history_analytics(history)
-
-        if st.button("Hapus Riwayat", disabled=True):
-            delete_history()
+            if st.button("Visualisasi Riwayat"):
+                show_history_analytics(history)
 
     elif menu == "Tentang Aplikasi":
         show_about()

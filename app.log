@@ -1,1 +1,14 @@
 2024-12-03 16:27:45,418 - ERROR - Error saving history: "['Nama', 'Jenis Kelamin', 'Usia', 'Hipertensi', 'Penyakit Jantung', 'Riwayat Merokok', 'Level HbA1c', 'Glukosa Darah', 'Hasil'] not in index"
+2024-12-09 21:28:46,199 - ERROR - Task exception was never retrieved
+future: <Task finished name='Task-4704' coro=<WebSocketProtocol13.write_message.<locals>.wrapper() done, defined at C:\Users\Muhamad Yusup\AppData\Local\Programs\Python\Python310\lib\site-packages\tornado\websocket.py:1086> exception=WebSocketClosedError()>
+Traceback (most recent call last):
+  File "C:\Users\Muhamad Yusup\AppData\Local\Programs\Python\Python310\lib\site-packages\tornado\websocket.py", line 1088, in wrapper
+    await fut
+tornado.iostream.StreamClosedError: Stream is closed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Muhamad Yusup\AppData\Local\Programs\Python\Python310\lib\site-packages\tornado\websocket.py", line 1090, in wrapper
+    raise WebSocketClosedError()
+tornado.websocket.WebSocketClosedError
