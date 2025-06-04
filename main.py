@@ -1,10 +1,10 @@
-import streamlit as st
-import numpy as np
-import pandas as pd
-import joblib
-import os
-import logging
-import plotly.express as px
+import streamlit as st #untuk membuat web
+import numpy as np #untuk komputasi numerik dlm python #untuk memproses data
+import pandas as pd #analisis data
+import joblib #menyimpan model machine learning yang sudah di latih
+import os #menyimpan dan mengelola file yang di unggah
+import logging #untuk mencatat berbagai aktivitas dan monitoring aplikasi
+import plotly.express as px #visualisasi data
 from config import MODEL_PATH, SCALER_PATH, HISTORY_FILE, AGE_RANGE, BMI_RANGE, HBA1C_RANGE, GLUCOSE_RANGE
 
 # Konfigurasi logging
@@ -210,6 +210,7 @@ def get_recommendations(result, bmi, glucose, hba1c, smoking_status, hypertensio
         # Rekomendasi umum untuk penderita diabetes
         recommendations.extend([
             "Rekomendasi Umum Diabetes:",
+            "- Kunjungi Dokter untuk pemeriksaan lebih lanjut",
             "- Olahraga minimal 30 menit/hari",
             "- Batasi konsumsi karbohidrat dan gula",
             "- Konsumsi makanan tinggi serat",
@@ -240,6 +241,7 @@ def get_recommendations(result, bmi, glucose, hba1c, smoking_status, hypertensio
         
         recommendations.extend([
             "***Rekomendasi Pencegahan Diabetes:***", 
+            "- Kunjungi Dokter untuk pemeriksaan lebih lanjut",
             "- Jaga Pola hidup sehat",
             "- Olahraga minimal 150 menit per minggu",
             "- Jaga Pola makan seimbang",
@@ -367,19 +369,19 @@ def show_about():
     2. **Menu Hitung BMI**
        - Masukkan berat badan (kg) dan tinggi badan (cm)
        - Sistem akan menghitung BMI dan memberikan kategori serta rekomendasi
-    
-    3. **Menu Riwayat**
-       - Lihat riwayat prediksi sebelumnya
-       - Unduh data riwayat dalam format CSV
-       - Analisis tren hasil prediksi
+
     """)
-    
+        
+    #3. **Menu Riwayat**
+       #- Lihat riwayat prediksi sebelumnya
+       #- Unduh data riwayat dalam format CSV
+       #- Analisis tren hasil prediksi
 
 # Main function for Streamlit
 def main():
     st.title("Prediksi Diabetes 🩺")
     st.sidebar.title("Menu")
-    menu = st.sidebar.radio("Pilih Menu:", ["Prediksi", "Hitung BMI", "Riwayat", "Tentang Aplikasi"])
+    menu = st.sidebar.radio("Pilih Menu:", ["Prediksi", "Hitung BMI", "Tentang Aplikasi"])
 
     # Load model dan scaler
     model, scaler = load_model_and_scaler()
@@ -421,9 +423,9 @@ def main():
                     result = predict_diabetes(input_data, model, scaler)
                     if result:
                         if result == 'Diabetes':
-                            st.markdown("<div style='background-color: #ff4d4d; color: white; padding: 10px; border-radius: 5px; text-align: center;'>Hasil: Diabetes</div>", unsafe_allow_html=True)
+                            st.markdown("<div style='background-color: #ff4d4d; color: white; padding: 10px; border-radius: 5px; text-align: center;'>HASIL SCREENING: TERINDIKASI DIABETES</div>", unsafe_allow_html=True)
                         else:
-                            st.markdown("<div style='background-color: #4caf50; color: white; padding: 10px; border-radius: 5px; text-align: center;'>Hasil: Non-Diabetes</div>", unsafe_allow_html=True)
+                            st.markdown("<div style='background-color: #4caf50; color: white; padding: 10px; border-radius: 5px; text-align: center;'>HASIL SCREENING: TERINDIKASI NON-DIABETES</div>", unsafe_allow_html=True)
                         
                         # Tampilkan rekomendasi
                         st.write("### Rekomendasi Kesehatan:")
@@ -478,32 +480,32 @@ def main():
                 for rec in recommendations:
                     st.write(f"- {rec}")
 
-    elif menu == "Riwayat":
-        st.write("Riwayat Prediksi:")
-        history = load_history()
-        if history.empty:
-            st.info("Belum ada riwayat prediksi.")
-        else:
+    #elif menu == "Riwayat":
+        #st.write("Riwayat Prediksi:")
+        #history = load_history()
+        #if history.empty:
+            #st.info("Belum ada riwayat prediksi.")
+        #else:
             # Terjemahkan nama kolom
-            history.columns = ['Nama', 'Jenis Kelamin', 'Usia', 'Hipertensi', 'Penyakit Jantung', 
-                             'Riwayat Merokok', 'BMI', 'Level HbA1c', 'Glukosa Darah', 'Hasil']
+            #history.columns = ['Nama', 'Jenis Kelamin', 'Usia', 'Hipertensi', 'Penyakit Jantung', 
+                             #'Riwayat Merokok', 'BMI', 'Level HbA1c', 'Glukosa Darah', 'Hasil']
             
             # Tampilkan data dengan nomor index
-            st.write("### Data Riwayat Prediksi")
-            history.index = range(1, len(history) + 1)
-            st.dataframe(history)
+            #st.write("### Data Riwayat Prediksi")
+            #history.index = range(1, len(history) + 1)
+            #st.dataframe(history)
             
             # Tombol unduh riwayat
-            csv = history.to_csv(index=False)
-            st.download_button(
-                label="Unduh Riwayat (CSV)",
-                data=csv,
-                file_name='riwayat_prediksi_diabetes.csv',
-                mime='text/csv'
-            )
+            #csv = history.to_csv(index=False)
+            #st.download_button(
+                #label="Unduh Riwayat (CSV)",
+                #data=csv,
+                #file_name='riwayat_prediksi_diabetes.csv',
+                #mime='text/csv'
+            #)
 
-            if st.button("Visualisasi Riwayat"):
-                show_history_analytics(history)
+            #if st.button("Visualisasi Riwayat"):
+                #show_history_analytics(history)
 
     elif menu == "Tentang Aplikasi":
         show_about()
