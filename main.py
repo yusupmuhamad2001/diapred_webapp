@@ -401,7 +401,7 @@ def main():
             smoking_history = st.selectbox('Riwayat Merokok', ['Tidak Pernah', 'Mantan Perokok', 'Perokok Aktif'])
 
         with col3:
-            bmi = st.number_input('BMI (Indeks Massa Tubuh)', min_value=10.0, max_value=50.0, step=0.1, value=25.0)
+            bmi = st.number_input('BMI', min_value=10.0, max_value=50.0, step=0.1, value=25.0)
             hba1c_level = st.number_input('Level HbA1c', min_value=3.0, max_value=15.0, step=0.1, value=5.0)
             blood_glucose_level = st.number_input('Level Glukosa Darah', min_value=50, max_value=300, step=1, value=100)
 
